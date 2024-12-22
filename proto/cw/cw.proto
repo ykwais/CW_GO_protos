@@ -8,6 +8,7 @@ service Service {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc isAdmin (isAdminRequest) returns (isAdminResponse);
+  rpc ListPhotos (EmptyRequest) returns (stream ListPhotosResponse);
 }
 
 message RegisterRequest {
@@ -36,3 +37,11 @@ message isAdminRequest {
 message isAdminResponse {
   bool is_admin = 1;
 }
+
+message EmptyRequest {}
+
+message ListPhotosResponse {
+  string photo_name = 1;
+  bytes chunk = 2;
+}
+
