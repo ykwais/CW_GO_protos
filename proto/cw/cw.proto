@@ -38,6 +38,7 @@ message isAdminResponse {
   bool is_admin = 1;
 }
 
+
 message ListPhotoRequest {
   string scope = 1;
 }
