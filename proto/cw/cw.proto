@@ -11,14 +11,18 @@ service Service {
   rpc ListPhotos (ListPhotoRequest) returns (stream ListPhotosResponse);
 }
 
+
+message RegisterResponse {
+  int64 user_id = 1;
+}
+
+
 message RegisterRequest {
   string login = 1;
   string password = 2;
 }
 
-message RegisterResponse {
-  int64 user_id = 1;
-}
+
 
 
 message LoginRequest {
