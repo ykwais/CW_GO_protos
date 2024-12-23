@@ -8,7 +8,7 @@ service Service {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc isAdmin (isAdminRequest) returns (isAdminResponse);
-  rpc ListPhotos (ListPhotosRequest) returns (stream ListPhotosResponse);
+  rpc ListPhotos (EmptyRequest) returns (stream ListPhotosResponse);
 }
 
 
@@ -42,10 +42,7 @@ message isAdminResponse {
   bool is_admin = 1;
 }
 
-
-message ListPhotosRequest {
-  string scope = 1;
-}
+message EmptyRequest {}
 
 message ListPhotosResponse {
   string photo_name = 1;

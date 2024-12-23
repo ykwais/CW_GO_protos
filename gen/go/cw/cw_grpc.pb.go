@@ -32,7 +32,7 @@ type ServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
-	ListPhotos(ctx context.Context, in *ListPhotosRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListPhotosResponse], error)
+	ListPhotos(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListPhotosResponse], error)
 }
 
 type serviceClient struct {
@@ -73,13 +73,13 @@ func (c *serviceClient) IsAdmin(ctx context.Context, in *IsAdminRequest, opts ..
 	return out, nil
 }
 
-func (c *serviceClient) ListPhotos(ctx context.Context, in *ListPhotosRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListPhotosResponse], error) {
+func (c *serviceClient) ListPhotos(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListPhotosResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &Service_ServiceDesc.Streams[0], Service_ListPhotos_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[ListPhotosRequest, ListPhotosResponse]{ClientStream: stream}
+	x := &grpc.GenericClientStream[EmptyRequest, ListPhotosResponse]{ClientStream: stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ type ServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
-	ListPhotos(*ListPhotosRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error
+	ListPhotos(*EmptyRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -119,7 +119,7 @@ func (UnimplementedServiceServer) Login(context.Context, *LoginRequest) (*LoginR
 func (UnimplementedServiceServer) IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsAdmin not implemented")
 }
-func (UnimplementedServiceServer) ListPhotos(*ListPhotosRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error {
+func (UnimplementedServiceServer) ListPhotos(*EmptyRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method ListPhotos not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
@@ -198,11 +198,11 @@ func _Service_IsAdmin_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _Service_ListPhotos_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ListPhotosRequest)
+	m := new(EmptyRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(ServiceServer).ListPhotos(m, &grpc.GenericServerStream[ListPhotosRequest, ListPhotosResponse]{ServerStream: stream})
+	return srv.(ServiceServer).ListPhotos(m, &grpc.GenericServerStream[EmptyRequest, ListPhotosResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
