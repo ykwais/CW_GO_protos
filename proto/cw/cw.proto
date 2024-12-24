@@ -7,7 +7,6 @@ option go_package = "ykwais.cw.v1;cwv1";
 service Service {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
-  rpc isAdmin (isAdminRequest) returns (isAdminResponse);
   rpc ListPhotos (EmptyRequest) returns (stream ListPhotosResponse);
 }
 
@@ -19,6 +18,8 @@ message RegisterResponse {
 message RegisterRequest {
   string login = 1;
   string password = 2;
+  string email = 3;
+  string realName = 4;
 }
 
 message LoginRequest {
@@ -27,16 +28,10 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  string token = 1;
-}
-
-message isAdminRequest {
   int64 user_id = 1;
 }
 
-message isAdminResponse {
-  bool is_admin = 1;
-}
+
 
 message EmptyRequest {}
 

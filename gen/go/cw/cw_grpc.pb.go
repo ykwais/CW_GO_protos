@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Service_Register_FullMethodName   = "/auth.Service/Register"
 	Service_Login_FullMethodName      = "/auth.Service/Login"
-	Service_IsAdmin_FullMethodName    = "/auth.Service/isAdmin"
 	Service_ListPhotos_FullMethodName = "/auth.Service/ListPhotos"
 )
 
@@ -31,7 +30,6 @@ const (
 type ServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
 	ListPhotos(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListPhotosResponse], error)
 }
 
@@ -63,16 +61,6 @@ func (c *serviceClient) Login(ctx context.Context, in *LoginRequest, opts ...grp
 	return out, nil
 }
 
-func (c *serviceClient) IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(IsAdminResponse)
-	err := c.cc.Invoke(ctx, Service_IsAdmin_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *serviceClient) ListPhotos(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListPhotosResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &Service_ServiceDesc.Streams[0], Service_ListPhotos_FullMethodName, cOpts...)
@@ -98,7 +86,6 @@ type Service_ListPhotosClient = grpc.ServerStreamingClient[ListPhotosResponse]
 type ServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
 	ListPhotos(*EmptyRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error
 	mustEmbedUnimplementedServiceServer()
 }
@@ -115,9 +102,6 @@ func (UnimplementedServiceServer) Register(context.Context, *RegisterRequest) (*
 }
 func (UnimplementedServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
-}
-func (UnimplementedServiceServer) IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IsAdmin not implemented")
 }
 func (UnimplementedServiceServer) ListPhotos(*EmptyRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method ListPhotos not implemented")
@@ -179,24 +163,6 @@ func _Service_Login_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Service_IsAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IsAdminRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ServiceServer).IsAdmin(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Service_IsAdmin_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).IsAdmin(ctx, req.(*IsAdminRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Service_ListPhotos_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(EmptyRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -222,10 +188,6 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _Service_Login_Handler,
-		},
-		{
-			MethodName: "isAdmin",
-			Handler:    _Service_IsAdmin_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
