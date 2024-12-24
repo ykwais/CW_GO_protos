@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Service_Register_FullMethodName   = "/auth.Service/Register"
-	Service_Login_FullMethodName      = "/auth.Service/Login"
-	Service_ListPhotos_FullMethodName = "/auth.Service/ListPhotos"
+	Service_Register_FullMethodName            = "/auth.Service/Register"
+	Service_Login_FullMethodName               = "/auth.Service/Login"
+	Service_ListPhotos_FullMethodName          = "/auth.Service/ListPhotos"
+	Service_PhotosForMainScreen_FullMethodName = "/auth.Service/PhotosForMainScreen"
 )
 
 // ServiceClient is the client API for Service service.
@@ -31,6 +32,7 @@ type ServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	ListPhotos(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListPhotosResponse], error)
+	PhotosForMainScreen(ctx context.Context, in *PhotosForMainScreenRequest, opts ...grpc.CallOption) (*PhotosForMainScreenResponse, error)
 }
 
 type serviceClient struct {
@@ -80,6 +82,16 @@ func (c *serviceClient) ListPhotos(ctx context.Context, in *EmptyRequest, opts .
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Service_ListPhotosClient = grpc.ServerStreamingClient[ListPhotosResponse]
 
+func (c *serviceClient) PhotosForMainScreen(ctx context.Context, in *PhotosForMainScreenRequest, opts ...grpc.CallOption) (*PhotosForMainScreenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PhotosForMainScreenResponse)
+	err := c.cc.Invoke(ctx, Service_PhotosForMainScreen_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServiceServer is the server API for Service service.
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility.
@@ -87,6 +99,7 @@ type ServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	ListPhotos(*EmptyRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error
+	PhotosForMainScreen(context.Context, *PhotosForMainScreenRequest) (*PhotosForMainScreenResponse, error)
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -105,6 +118,9 @@ func (UnimplementedServiceServer) Login(context.Context, *LoginRequest) (*LoginR
 }
 func (UnimplementedServiceServer) ListPhotos(*EmptyRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method ListPhotos not implemented")
+}
+func (UnimplementedServiceServer) PhotosForMainScreen(context.Context, *PhotosForMainScreenRequest) (*PhotosForMainScreenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PhotosForMainScreen not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
 func (UnimplementedServiceServer) testEmbeddedByValue()                 {}
@@ -174,6 +190,24 @@ func _Service_ListPhotos_Handler(srv interface{}, stream grpc.ServerStream) erro
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Service_ListPhotosServer = grpc.ServerStreamingServer[ListPhotosResponse]
 
+func _Service_PhotosForMainScreen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PhotosForMainScreenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceServer).PhotosForMainScreen(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Service_PhotosForMainScreen_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceServer).PhotosForMainScreen(ctx, req.(*PhotosForMainScreenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Service_ServiceDesc is the grpc.ServiceDesc for Service service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -188,6 +222,10 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _Service_Login_Handler,
+		},
+		{
+			MethodName: "PhotosForMainScreen",
+			Handler:    _Service_PhotosForMainScreen_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

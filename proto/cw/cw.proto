@@ -8,7 +8,22 @@ service Service {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc ListPhotos (EmptyRequest) returns (stream ListPhotosResponse);
+  rpc PhotosForMainScreen (PhotosForMainScreenRequest) returns (PhotosForMainScreenResponse);
 }
+
+message PhotosForMainScreenRequest {
+  string date_begin = 1;
+  string date_end = 2;
+}
+
+message PhotosForMainScreenResponse {
+  bytes chunk = 1;
+  string brand = 2;
+  string model = 3;
+  int64 vehicle_id = 4;
+  double price_per_day = 5;
+}
+
 
 
 message RegisterResponse {
