@@ -25,6 +25,7 @@ const (
 	Service_PhotosForMainScreen_FullMethodName = "/auth.Service/PhotosForMainScreen"
 	Service_PhotosOfAutomobile_FullMethodName  = "/auth.Service/PhotosOfAutomobile"
 	Service_SelectAuto_FullMethodName          = "/auth.Service/SelectAuto"
+	Service_GetUserBookings_FullMethodName     = "/auth.Service/GetUserBookings"
 )
 
 // ServiceClient is the client API for Service service.
@@ -37,6 +38,7 @@ type ServiceClient interface {
 	PhotosForMainScreen(ctx context.Context, in *PhotosForMainScreenRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PhotosForMainScreenResponse], error)
 	PhotosOfAutomobile(ctx context.Context, in *PhotosOfAutomobileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PhotosOfAutomobileResponse], error)
 	SelectAuto(ctx context.Context, in *SelectAutoRequest, opts ...grpc.CallOption) (*SelectAutoResponse, error)
+	GetUserBookings(ctx context.Context, in *UserBookingsRequest, opts ...grpc.CallOption) (*UserBookingsResponse, error)
 }
 
 type serviceClient struct {
@@ -134,6 +136,16 @@ func (c *serviceClient) SelectAuto(ctx context.Context, in *SelectAutoRequest, o
 	return out, nil
 }
 
+func (c *serviceClient) GetUserBookings(ctx context.Context, in *UserBookingsRequest, opts ...grpc.CallOption) (*UserBookingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserBookingsResponse)
+	err := c.cc.Invoke(ctx, Service_GetUserBookings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServiceServer is the server API for Service service.
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility.
@@ -144,6 +156,7 @@ type ServiceServer interface {
 	PhotosForMainScreen(*PhotosForMainScreenRequest, grpc.ServerStreamingServer[PhotosForMainScreenResponse]) error
 	PhotosOfAutomobile(*PhotosOfAutomobileRequest, grpc.ServerStreamingServer[PhotosOfAutomobileResponse]) error
 	SelectAuto(context.Context, *SelectAutoRequest) (*SelectAutoResponse, error)
+	GetUserBookings(context.Context, *UserBookingsRequest) (*UserBookingsResponse, error)
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -171,6 +184,9 @@ func (UnimplementedServiceServer) PhotosOfAutomobile(*PhotosOfAutomobileRequest,
 }
 func (UnimplementedServiceServer) SelectAuto(context.Context, *SelectAutoRequest) (*SelectAutoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SelectAuto not implemented")
+}
+func (UnimplementedServiceServer) GetUserBookings(context.Context, *UserBookingsRequest) (*UserBookingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserBookings not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
 func (UnimplementedServiceServer) testEmbeddedByValue()                 {}
@@ -280,6 +296,24 @@ func _Service_SelectAuto_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Service_GetUserBookings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserBookingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceServer).GetUserBookings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Service_GetUserBookings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceServer).GetUserBookings(ctx, req.(*UserBookingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Service_ServiceDesc is the grpc.ServiceDesc for Service service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -298,6 +332,10 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SelectAuto",
 			Handler:    _Service_SelectAuto_Handler,
+		},
+		{
+			MethodName: "GetUserBookings",
+			Handler:    _Service_GetUserBookings_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
