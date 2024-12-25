@@ -10,6 +10,18 @@ service Service {
   rpc ListPhotos (EmptyRequest) returns (stream ListPhotosResponse);
   rpc PhotosForMainScreen (PhotosForMainScreenRequest) returns (stream PhotosForMainScreenResponse);
   rpc PhotosOfAutomobile (PhotosOfAutomobileRequest) returns (stream PhotosOfAutomobileResponse);
+  rpc SelectAuto (SelectAutoRequest) returns (SelectAutoResponse);
+}
+
+message SelectAutoRequest {
+  int64 user_id = 1;
+  int64 vehicle_id = 2;
+  string start_time = 3;
+  string end_time = 4;
+}
+
+message SelectAutoResponse {
+  int64 vehicle_id = 1;
 }
 
 message PhotosOfAutomobileRequest {
