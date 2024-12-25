@@ -19,10 +19,11 @@ message UserBookingsRequest {
 }
 
 message BookingInfo {
-  string brand_name = 1;
-  string model_name = 2;
-  string date_begin = 3;
-  string date_end = 4;
+  int64 vehicle_id = 1;
+  string brand_name = 2;
+  string model_name = 3;
+  string date_begin = 4;
+  string date_end = 5;
 }
 
 message UserBookingsResponse {
