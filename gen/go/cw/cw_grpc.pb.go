@@ -23,6 +23,7 @@ const (
 	Service_Login_FullMethodName               = "/auth.Service/Login"
 	Service_ListPhotos_FullMethodName          = "/auth.Service/ListPhotos"
 	Service_PhotosForMainScreen_FullMethodName = "/auth.Service/PhotosForMainScreen"
+	Service_PhotosOfAutomobile_FullMethodName  = "/auth.Service/PhotosOfAutomobile"
 )
 
 // ServiceClient is the client API for Service service.
@@ -33,6 +34,7 @@ type ServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	ListPhotos(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListPhotosResponse], error)
 	PhotosForMainScreen(ctx context.Context, in *PhotosForMainScreenRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PhotosForMainScreenResponse], error)
+	PhotosOfAutomobile(ctx context.Context, in *PhotosOfAutomobileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PhotosOfAutomobileResponse], error)
 }
 
 type serviceClient struct {
@@ -101,6 +103,25 @@ func (c *serviceClient) PhotosForMainScreen(ctx context.Context, in *PhotosForMa
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Service_PhotosForMainScreenClient = grpc.ServerStreamingClient[PhotosForMainScreenResponse]
 
+func (c *serviceClient) PhotosOfAutomobile(ctx context.Context, in *PhotosOfAutomobileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PhotosOfAutomobileResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Service_ServiceDesc.Streams[2], Service_PhotosOfAutomobile_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[PhotosOfAutomobileRequest, PhotosOfAutomobileResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Service_PhotosOfAutomobileClient = grpc.ServerStreamingClient[PhotosOfAutomobileResponse]
+
 // ServiceServer is the server API for Service service.
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility.
@@ -109,6 +130,7 @@ type ServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	ListPhotos(*EmptyRequest, grpc.ServerStreamingServer[ListPhotosResponse]) error
 	PhotosForMainScreen(*PhotosForMainScreenRequest, grpc.ServerStreamingServer[PhotosForMainScreenResponse]) error
+	PhotosOfAutomobile(*PhotosOfAutomobileRequest, grpc.ServerStreamingServer[PhotosOfAutomobileResponse]) error
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -130,6 +152,9 @@ func (UnimplementedServiceServer) ListPhotos(*EmptyRequest, grpc.ServerStreaming
 }
 func (UnimplementedServiceServer) PhotosForMainScreen(*PhotosForMainScreenRequest, grpc.ServerStreamingServer[PhotosForMainScreenResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method PhotosForMainScreen not implemented")
+}
+func (UnimplementedServiceServer) PhotosOfAutomobile(*PhotosOfAutomobileRequest, grpc.ServerStreamingServer[PhotosOfAutomobileResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method PhotosOfAutomobile not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
 func (UnimplementedServiceServer) testEmbeddedByValue()                 {}
@@ -210,6 +235,17 @@ func _Service_PhotosForMainScreen_Handler(srv interface{}, stream grpc.ServerStr
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Service_PhotosForMainScreenServer = grpc.ServerStreamingServer[PhotosForMainScreenResponse]
 
+func _Service_PhotosOfAutomobile_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PhotosOfAutomobileRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ServiceServer).PhotosOfAutomobile(m, &grpc.GenericServerStream[PhotosOfAutomobileRequest, PhotosOfAutomobileResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Service_PhotosOfAutomobileServer = grpc.ServerStreamingServer[PhotosOfAutomobileResponse]
+
 // Service_ServiceDesc is the grpc.ServiceDesc for Service service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -235,6 +271,11 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "PhotosForMainScreen",
 			Handler:       _Service_PhotosForMainScreen_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "PhotosOfAutomobile",
+			Handler:       _Service_PhotosOfAutomobile_Handler,
 			ServerStreams: true,
 		},
 	},
