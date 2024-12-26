@@ -15,6 +15,15 @@ service Service {
   rpc CancelBooking (CancelBookingRequest) returns (CancelBookingResponse);
   rpc GetDataForAdmin (GetDataForAdminRequest) returns (GetDataForAdminResponse);
   rpc GetUsersForAdmin (GetUsersForAdminRequest) returns (GetUsersForAdminResponse);
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+message DeleteUserRequest {
+  int64 user_id = 1;
+}
+
+message DeleteUserResponse {
+  bool result = 1;
 }
 
 message GetUsersForAdminRequest {}

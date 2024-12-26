@@ -29,6 +29,7 @@ const (
 	Service_CancelBooking_FullMethodName       = "/auth.Service/CancelBooking"
 	Service_GetDataForAdmin_FullMethodName     = "/auth.Service/GetDataForAdmin"
 	Service_GetUsersForAdmin_FullMethodName    = "/auth.Service/GetUsersForAdmin"
+	Service_DeleteUser_FullMethodName          = "/auth.Service/DeleteUser"
 )
 
 // ServiceClient is the client API for Service service.
@@ -45,6 +46,7 @@ type ServiceClient interface {
 	CancelBooking(ctx context.Context, in *CancelBookingRequest, opts ...grpc.CallOption) (*CancelBookingResponse, error)
 	GetDataForAdmin(ctx context.Context, in *GetDataForAdminRequest, opts ...grpc.CallOption) (*GetDataForAdminResponse, error)
 	GetUsersForAdmin(ctx context.Context, in *GetUsersForAdminRequest, opts ...grpc.CallOption) (*GetUsersForAdminResponse, error)
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
 }
 
 type serviceClient struct {
@@ -182,6 +184,16 @@ func (c *serviceClient) GetUsersForAdmin(ctx context.Context, in *GetUsersForAdm
 	return out, nil
 }
 
+func (c *serviceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteUserResponse)
+	err := c.cc.Invoke(ctx, Service_DeleteUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServiceServer is the server API for Service service.
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility.
@@ -196,6 +208,7 @@ type ServiceServer interface {
 	CancelBooking(context.Context, *CancelBookingRequest) (*CancelBookingResponse, error)
 	GetDataForAdmin(context.Context, *GetDataForAdminRequest) (*GetDataForAdminResponse, error)
 	GetUsersForAdmin(context.Context, *GetUsersForAdminRequest) (*GetUsersForAdminResponse, error)
+	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -235,6 +248,9 @@ func (UnimplementedServiceServer) GetDataForAdmin(context.Context, *GetDataForAd
 }
 func (UnimplementedServiceServer) GetUsersForAdmin(context.Context, *GetUsersForAdminRequest) (*GetUsersForAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsersForAdmin not implemented")
+}
+func (UnimplementedServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
 func (UnimplementedServiceServer) testEmbeddedByValue()                 {}
@@ -416,6 +432,24 @@ func _Service_GetUsersForAdmin_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Service_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Service_DeleteUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceServer).DeleteUser(ctx, req.(*DeleteUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Service_ServiceDesc is the grpc.ServiceDesc for Service service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -450,6 +484,10 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUsersForAdmin",
 			Handler:    _Service_GetUsersForAdmin_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _Service_DeleteUser_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
