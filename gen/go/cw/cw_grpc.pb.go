@@ -30,6 +30,8 @@ const (
 	Service_GetDataForAdmin_FullMethodName     = "/auth.Service/GetDataForAdmin"
 	Service_GetUsersForAdmin_FullMethodName    = "/auth.Service/GetUsersForAdmin"
 	Service_DeleteUser_FullMethodName          = "/auth.Service/DeleteUser"
+	Service_DoBackUp_FullMethodName            = "/auth.Service/DoBackUp"
+	Service_DoRollBack_FullMethodName          = "/auth.Service/DoRollBack"
 )
 
 // ServiceClient is the client API for Service service.
@@ -47,6 +49,8 @@ type ServiceClient interface {
 	GetDataForAdmin(ctx context.Context, in *GetDataForAdminRequest, opts ...grpc.CallOption) (*GetDataForAdminResponse, error)
 	GetUsersForAdmin(ctx context.Context, in *GetUsersForAdminRequest, opts ...grpc.CallOption) (*GetUsersForAdminResponse, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
+	DoBackUp(ctx context.Context, in *DoBackUpRequest, opts ...grpc.CallOption) (*DoBackUpResponse, error)
+	DoRollBack(ctx context.Context, in *DoRollBackRequest, opts ...grpc.CallOption) (*DoRollBackResponse, error)
 }
 
 type serviceClient struct {
@@ -194,6 +198,26 @@ func (c *serviceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, o
 	return out, nil
 }
 
+func (c *serviceClient) DoBackUp(ctx context.Context, in *DoBackUpRequest, opts ...grpc.CallOption) (*DoBackUpResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DoBackUpResponse)
+	err := c.cc.Invoke(ctx, Service_DoBackUp_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serviceClient) DoRollBack(ctx context.Context, in *DoRollBackRequest, opts ...grpc.CallOption) (*DoRollBackResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DoRollBackResponse)
+	err := c.cc.Invoke(ctx, Service_DoRollBack_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServiceServer is the server API for Service service.
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility.
@@ -209,6 +233,8 @@ type ServiceServer interface {
 	GetDataForAdmin(context.Context, *GetDataForAdminRequest) (*GetDataForAdminResponse, error)
 	GetUsersForAdmin(context.Context, *GetUsersForAdminRequest) (*GetUsersForAdminResponse, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	DoBackUp(context.Context, *DoBackUpRequest) (*DoBackUpResponse, error)
+	DoRollBack(context.Context, *DoRollBackRequest) (*DoRollBackResponse, error)
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -251,6 +277,12 @@ func (UnimplementedServiceServer) GetUsersForAdmin(context.Context, *GetUsersFor
 }
 func (UnimplementedServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedServiceServer) DoBackUp(context.Context, *DoBackUpRequest) (*DoBackUpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DoBackUp not implemented")
+}
+func (UnimplementedServiceServer) DoRollBack(context.Context, *DoRollBackRequest) (*DoRollBackResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DoRollBack not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
 func (UnimplementedServiceServer) testEmbeddedByValue()                 {}
@@ -450,6 +482,42 @@ func _Service_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Service_DoBackUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DoBackUpRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceServer).DoBackUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Service_DoBackUp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceServer).DoBackUp(ctx, req.(*DoBackUpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Service_DoRollBack_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DoRollBackRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceServer).DoRollBack(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Service_DoRollBack_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceServer).DoRollBack(ctx, req.(*DoRollBackRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Service_ServiceDesc is the grpc.ServiceDesc for Service service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -488,6 +556,14 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUser",
 			Handler:    _Service_DeleteUser_Handler,
+		},
+		{
+			MethodName: "DoBackUp",
+			Handler:    _Service_DoBackUp_Handler,
+		},
+		{
+			MethodName: "DoRollBack",
+			Handler:    _Service_DoRollBack_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

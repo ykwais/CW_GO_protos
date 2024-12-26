@@ -17,7 +17,13 @@ service Service {
   rpc GetUsersForAdmin (GetUsersForAdminRequest) returns (GetUsersForAdminResponse);
   rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse);
   rpc DoBackUp (DoBackUpRequest) returns (DoBackUpResponse);
+  rpc DoRollBack (DoRollBackRequest) returns (DoRollBackResponse);
 }
+
+message DoRollBackRequest {}
+
+message DoRollBackResponse {}
+
 
 message DoBackUpRequest {}
 
