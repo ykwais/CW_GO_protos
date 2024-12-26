@@ -16,7 +16,13 @@ service Service {
   rpc GetDataForAdmin (GetDataForAdminRequest) returns (GetDataForAdminResponse);
   rpc GetUsersForAdmin (GetUsersForAdminRequest) returns (GetUsersForAdminResponse);
   rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse);
+  rpc DoBackUp (DoBackUpRequest) returns (DoBackUpResponse);
 }
+
+message DoBackUpRequest {}
+
+message DoBackUpResponse {}
+
 
 message DeleteUserRequest {
   int64 user_id = 1;
