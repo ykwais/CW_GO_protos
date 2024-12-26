@@ -27,6 +27,7 @@ const (
 	Service_SelectAuto_FullMethodName          = "/auth.Service/SelectAuto"
 	Service_GetUserBookings_FullMethodName     = "/auth.Service/GetUserBookings"
 	Service_CancelBooking_FullMethodName       = "/auth.Service/CancelBooking"
+	Service_GetDataForAdmin_FullMethodName     = "/auth.Service/GetDataForAdmin"
 )
 
 // ServiceClient is the client API for Service service.
@@ -41,6 +42,7 @@ type ServiceClient interface {
 	SelectAuto(ctx context.Context, in *SelectAutoRequest, opts ...grpc.CallOption) (*SelectAutoResponse, error)
 	GetUserBookings(ctx context.Context, in *UserBookingsRequest, opts ...grpc.CallOption) (*UserBookingsResponse, error)
 	CancelBooking(ctx context.Context, in *CancelBookingRequest, opts ...grpc.CallOption) (*CancelBookingResponse, error)
+	GetDataForAdmin(ctx context.Context, in *GetDataForAdminRequest, opts ...grpc.CallOption) (*GetDataForAdminResponse, error)
 }
 
 type serviceClient struct {
@@ -158,6 +160,16 @@ func (c *serviceClient) CancelBooking(ctx context.Context, in *CancelBookingRequ
 	return out, nil
 }
 
+func (c *serviceClient) GetDataForAdmin(ctx context.Context, in *GetDataForAdminRequest, opts ...grpc.CallOption) (*GetDataForAdminResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDataForAdminResponse)
+	err := c.cc.Invoke(ctx, Service_GetDataForAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServiceServer is the server API for Service service.
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility.
@@ -170,6 +182,7 @@ type ServiceServer interface {
 	SelectAuto(context.Context, *SelectAutoRequest) (*SelectAutoResponse, error)
 	GetUserBookings(context.Context, *UserBookingsRequest) (*UserBookingsResponse, error)
 	CancelBooking(context.Context, *CancelBookingRequest) (*CancelBookingResponse, error)
+	GetDataForAdmin(context.Context, *GetDataForAdminRequest) (*GetDataForAdminResponse, error)
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -203,6 +216,9 @@ func (UnimplementedServiceServer) GetUserBookings(context.Context, *UserBookings
 }
 func (UnimplementedServiceServer) CancelBooking(context.Context, *CancelBookingRequest) (*CancelBookingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelBooking not implemented")
+}
+func (UnimplementedServiceServer) GetDataForAdmin(context.Context, *GetDataForAdminRequest) (*GetDataForAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDataForAdmin not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
 func (UnimplementedServiceServer) testEmbeddedByValue()                 {}
@@ -348,6 +364,24 @@ func _Service_CancelBooking_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Service_GetDataForAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDataForAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceServer).GetDataForAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Service_GetDataForAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceServer).GetDataForAdmin(ctx, req.(*GetDataForAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Service_ServiceDesc is the grpc.ServiceDesc for Service service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -374,6 +408,10 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CancelBooking",
 			Handler:    _Service_CancelBooking_Handler,
+		},
+		{
+			MethodName: "GetDataForAdmin",
+			Handler:    _Service_GetDataForAdmin_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
