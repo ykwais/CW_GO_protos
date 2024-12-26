@@ -12,6 +12,16 @@ service Service {
   rpc PhotosOfAutomobile (PhotosOfAutomobileRequest) returns (stream PhotosOfAutomobileResponse);
   rpc SelectAuto (SelectAutoRequest) returns (SelectAutoResponse);
   rpc GetUserBookings (UserBookingsRequest) returns (UserBookingsResponse);
+  rpc CancelBooking (CancelBookingRequest) returns (CancelBookingResponse);
+}
+
+message CancelBookingRequest {
+  int64 user_id = 1;
+  int64 vehicle_id = 2;
+}
+
+message CancelBookingResponse {
+  bool result = 1;
 }
 
 message UserBookingsRequest {
